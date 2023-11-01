@@ -114,4 +114,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(total, records);
     }
 
+    /**
+     * 启用禁用员工账号
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 使用员工实体类来接收参数
+        // Employee employee = new Employee();
+        // 使用静态builer方法来设置值
+        Employee employee = Employee.builder()
+                                    .id(id)
+                                    .status(status)
+                                    .updateTime(LocalDateTime.now())
+                                    .updateUser(BaseContext.getCurrentId())
+                                    .build();
+
+        employeeMapper.update(employee);
+    }
+
 }
