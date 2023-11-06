@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +50,19 @@ public class CategoryController {
     public Result save(@RequestBody CategoryDTO categoryDTO) {
         log.info("新增分类，{}");
         categoryService.save(categoryDTO);
+        return Result.success();
+    }
+
+    /**
+     * 修改分类
+     * @param categoryDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改分类")
+    public Result update(@RequestBody CategoryDTO categoryDTO) {
+        log.info("修改分类，{}", categoryDTO);
+        categoryService.update(categoryDTO);
         return Result.success();
     }
 }
