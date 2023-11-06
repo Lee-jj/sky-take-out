@@ -2,6 +2,7 @@ package com.sky.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,6 +64,20 @@ public class CategoryController {
     public Result update(@RequestBody CategoryDTO categoryDTO) {
         log.info("修改分类，{}", categoryDTO);
         categoryService.update(categoryDTO);
+        return Result.success();
+    }
+
+    /**
+     * 启用禁用分类
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("status/{status}")
+    @ApiOperation("启用禁用分类")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        log.info("启用禁用分类, {}, {}", status, id);
+        categoryService.startOrStop(status, id);
         return Result.success();
     }
 }
