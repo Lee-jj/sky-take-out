@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,5 +96,18 @@ public class CategoryController {
         log.info("根据类型查询启用的分类，{}", type);
         List<Category> category = categoryService.list(type);
         return Result.success(category);
+    }
+
+    /**
+     * 删除分类
+     * @param id
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("根据id删除分类")
+    public Result deleteById(Long id) {
+        log.info("根据id删除分类, {}", id);
+        categoryService.deleteById(id);
+        return Result.success();
     }
 }
