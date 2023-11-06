@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,14 @@ public class CategoryServiceImpl implements CategoryService{
                 .updateUser(BaseContext.getCurrentId())
                 .build();
         categoryMapper.update(category);
+    }
+
+    /**
+     * 根据类型查询启用的分类
+     */
+    @Override
+    public List<Category> list(Integer type) {
+        return categoryMapper.list(type);
     }
     
 }

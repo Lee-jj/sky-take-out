@@ -1,5 +1,7 @@
 package com.sky.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -31,5 +33,12 @@ public interface CategoryMapper {
      * @param category
      */
     void update(Category category);
+
+    /**
+     * 根据类型查询启用的分类
+     * @param type
+     * @return
+     */
+    List<Category> list(Integer type);
     
 }

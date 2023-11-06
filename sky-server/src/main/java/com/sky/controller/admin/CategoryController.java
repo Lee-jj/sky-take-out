@@ -1,5 +1,7 @@
 package com.sky.controller.admin;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.CategoryService;
@@ -79,5 +82,18 @@ public class CategoryController {
         log.info("启用禁用分类, {}, {}", status, id);
         categoryService.startOrStop(status, id);
         return Result.success();
+    }
+
+    /**
+     * 根据类型查询启用的分类
+     * @param type
+     * @return
+     */
+    @GetMapping("list")
+    @ApiOperation("根据类型查询启用的分类")
+    public Result<List<Category>> list(Integer type) {
+        log.info("根据类型查询启用的分类，{}", type);
+        List<Category> category = categoryService.list(type);
+        return Result.success(category);
     }
 }
