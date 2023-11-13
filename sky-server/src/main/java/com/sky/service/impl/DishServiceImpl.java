@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -149,6 +150,27 @@ public class DishServiceImpl implements DishService {
             // 向dish_flavor表中插入n条数据
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
+
+    /**
+     * 根据分类id查询菜品及对应口味表
+     * @param categoryId
+     */
+    @Override
+    public List<DishVO> listWithFlavor(Long categoryId) {
+        // 根据分类id查询起售菜品
+        List<Dish> dishs = dishMapper.listByCategoryId(categoryId);
+
+        List<DishVO> dishVOs = new ArrayList<>();
+        for (Dish dish: dishs) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(dish, dishVO);
+            // 查询找到的菜品中的对应的口味表信息
+            dishVO.setFlavors(dishFlavorMapper.getByDishId(dish.getId()));
+            dishVOs.add(dishVO);
+        }
+
+        return dishVOs;
     }
     
 }
