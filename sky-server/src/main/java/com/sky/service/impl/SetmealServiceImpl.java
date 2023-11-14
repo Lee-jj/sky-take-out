@@ -126,5 +126,16 @@ public class SetmealServiceImpl implements SetmealService {
         Setmeal setmeal = Setmeal.builder().id(id).status(status).build();
         setmealMapper.update(setmeal);
     }
+
+    /**
+     * 根据分类id查询起售套餐
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<Setmeal> listByCategoryId(Long categoryId) {
+        List<Setmeal> setmeals = setmealMapper.getByCategoryId(categoryId);
+        return setmeals;
+    }
     
 }
