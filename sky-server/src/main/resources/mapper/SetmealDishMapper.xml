@@ -27,4 +27,15 @@
                 </foreach>
         </delete>
 
+        <!-- getDishBySetmealId --> 
+        <select id="getDishBySetmealId" resultType="com.sky.vo.DishItemVO">
+                select s.name, s.copies, d.image, d.description 
+                from
+                        setmeal_dish as s
+                left join
+                        dish as d
+                on s.dish_id = d.id
+                where s.setmeal_id = #{setmealId}
+        </select>
+
 </mapper>

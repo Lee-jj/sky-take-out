@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sky.entity.Setmeal;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,4 +39,16 @@ public class SetmealController {
         return Result.success(setmeals);
     }
     
+    /**
+     * 根据套餐id查询包含菜品
+     * @param id
+     * @return
+     */
+    @GetMapping("/dish/{id}")
+    @ApiOperation("根据套餐id查询包含菜品")
+    public Result<List<DishItemVO>> getDishList(@PathVariable Long id) {
+        log.info("根据套餐id查询包含菜品,{}", id);
+        List<DishItemVO> dishList = setmealService.getDishList(id);
+        return Result.success(dishList);
+    }
 }
