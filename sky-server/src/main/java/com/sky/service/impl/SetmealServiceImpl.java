@@ -115,5 +115,16 @@ public class SetmealServiceImpl implements SetmealService {
         // 再删除对应的菜品
         setmealDishMapper.deleteBySetmealIds(ids);
     }
+
+    /**
+     * 套餐的起售停售
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Setmeal setmeal = Setmeal.builder().id(id).status(status).build();
+        setmealMapper.update(setmeal);
+    }
     
 }
