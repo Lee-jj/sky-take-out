@@ -1,14 +1,19 @@
 package com.sky.controller.admin;
 
+import java.util.List;
+
 import javax.websocket.server.PathParam;
 
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sky.dto.SetmealDTO;
@@ -81,5 +86,18 @@ public class SetmealController {
         log.info("根据id查询套餐，{}", id);
         SetmealVO setmealVO = setmealService.getById(id);
         return Result.success(setmealVO);
+    }
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("批量删除套餐")
+    public Result deleteBatch(@RequestParam List<Long> ids) {
+        log.info("批量删除套餐，{}", ids);
+        setmealService.deleteBatch(ids);
+        return Result.success();
     }
 }

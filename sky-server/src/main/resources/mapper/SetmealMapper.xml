@@ -49,4 +49,12 @@
                 where id = #{id}
         </update>
 
+        <!-- deletBatch --> 
+        <delete id="deletBatch">
+                delete from setmeal where id in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                        #{id}
+                </foreach>
+        </delete>
+
 </mapper>

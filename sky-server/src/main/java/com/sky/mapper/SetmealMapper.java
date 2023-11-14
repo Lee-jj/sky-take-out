@@ -1,5 +1,7 @@
 package com.sky.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -49,5 +51,11 @@ public interface SetmealMapper {
      */
     @Select("select * from setmeal where id = #{id}")
     Setmeal getById(Long id);
+
+    /**
+     * 根据套餐id批量删除套餐
+     * @param ids
+     */
+    void deletBatch(List<Long> ids);
     
 }
