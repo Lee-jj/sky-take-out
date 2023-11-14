@@ -1,7 +1,7 @@
 package com.sky.controller.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +28,7 @@ public class SetmealController {
      * @param setmealDTO
      * @return
      */
-    @PutMapping
+    @PostMapping
     @ApiOperation("新增套餐")
     public Result insert(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐,{}", setmealDTO);

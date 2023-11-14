@@ -32,9 +32,9 @@ public class SetmealServiceImpl implements SetmealService {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
 
-        Long setmealId = setmealDTO.getId();
-
         setmealMapper.insert(setmeal);
+        
+        Long setmealId = setmeal.getId();
 
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         if (setmealDishes!= null && setmealDishes.size() > 0) {
