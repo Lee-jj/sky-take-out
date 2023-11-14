@@ -18,5 +18,11 @@ public interface SetmealService {
      * @return
      */
     PageResult pagequery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     */
+    void update(SetmealDTO setmealDTO);
     
 }

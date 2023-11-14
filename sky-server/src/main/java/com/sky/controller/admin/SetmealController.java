@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,5 +51,18 @@ public class SetmealController {
         log.info("套餐分页查询，{}",  setmealPageQueryDTO);
         PageResult pageResult = setmealService.pagequery(setmealPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result update(@RequestBody SetmealDTO setmealDTO) {
+        log.info("修改套餐,{}", setmealDTO);
+        setmealService.update(setmealDTO);
+        return Result.success();
     }
 }
