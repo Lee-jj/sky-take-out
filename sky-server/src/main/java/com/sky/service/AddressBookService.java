@@ -38,5 +38,12 @@ public interface AddressBookService {
      * @return
      */
     void update(AddressBook addressBook);
+
+    /**
+     * 设置默认地址
+     * @param addressBook
+     * @return
+     */
+    void setDefault(AddressBook addressBook);
     
 }

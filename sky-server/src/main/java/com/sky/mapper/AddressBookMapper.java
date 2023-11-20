@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Update;
 
 import com.sky.entity.AddressBook;
 
@@ -32,4 +33,10 @@ public interface AddressBookMapper {
      */
     void update(AddressBook addressBook);
     
+    /**
+     * 根据用户id修改所有地址为非默认状态
+     * @param addressBook
+     */
+    @Update("update address_book set is_default = #{isDefault} where user_id = #{userId}")
+    void updateDefalutByUserId(AddressBook addressBook);
 }

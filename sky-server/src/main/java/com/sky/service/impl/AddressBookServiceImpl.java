@@ -77,5 +77,22 @@ public class AddressBookServiceImpl implements AddressBookService {
     public void update(AddressBook addressBook) {
         addressBookMapper.update(addressBook);
     }
+
+    /**
+     * 设置默认地址
+     * @param addressBook
+     * @return
+     */
+    @Override
+    public void setDefault(AddressBook addressBook) {
+        // 先把当前用户所有的地址设置为非默认地址
+        addressBook.setIsDefault(0);
+        addressBook.setUserId(BaseContext.getCurrentId());
+        addressBookMapper.updateDefalutByUserId(addressBook);
+
+        // 再把指定的地址设置为默认地址
+        addressBook.setIsDefault(1);
+        addressBookMapper.update(addressBook);
+    }
     
 }
