@@ -18,5 +18,12 @@ public interface AddressBookService {
      * @return
      */
     void add(AddressBook addressBook);
+
+    /**
+     * 根据id查询地址
+     * @param id
+     * @return
+     */
+    AddressBook getById(Long id);
     
 }

@@ -39,5 +39,16 @@ public class AddressBookServiceImpl implements AddressBookService {
         addressBook.setIsDefault(0);
         addressBookMapper.insert(addressBook);
     }
+
+    /**
+     * 根据id查询地址
+     * @param id
+     * @return
+     */
+    @Override
+    public AddressBook getById(Long id) {
+        List<AddressBook> list = addressBookMapper.listById(id);
+        return list.get(0);
+    }
     
 }

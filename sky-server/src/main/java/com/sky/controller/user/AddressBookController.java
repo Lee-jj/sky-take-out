@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,5 +50,18 @@ public class AddressBookController {
         log.info("新增地址，{}", addressBook);
         addressBookService.add(addressBook);
         return Result.success();
+    }
+
+    /**
+     * 根据id查询地址
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询地址")
+    public Result<AddressBook> getById(@PathVariable Long id) {
+        log.info("根据id查询地址，{}", id);
+        AddressBook addressBook = addressBookService.getById(id);
+        return Result.success(addressBook);
     }
 }
