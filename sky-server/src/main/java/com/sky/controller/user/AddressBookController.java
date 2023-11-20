@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,7 +76,7 @@ public class AddressBookController {
     public Result<AddressBook> getDefaultAddress() {
         log.info("查询默认地址");
         AddressBook addressBook = addressBookService.getDefaultAddress();
-        
+
         // 能查到
         if (addressBook!= null) {
             return Result.success(addressBook);
@@ -84,4 +85,17 @@ public class AddressBookController {
         // 查不到
         return Result.error(MessageConstant.FIALT_TO_GET_DEFAULT_ADDRESS);
     } 
+
+    /**
+     * 修改地址信息
+     * @param addressBook
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改地址信息")
+    public Result update(@RequestBody AddressBook addressBook) {
+        log.info("修改地址信息，{}", addressBook);
+        addressBookService.update(addressBook);
+        return Result.success();
+    }
 }

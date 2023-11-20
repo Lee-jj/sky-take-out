@@ -24,5 +24,12 @@ public interface AddressBookMapper {
      * @return
      */
     List<AddressBook> list(AddressBook addressBook);
+
+    /**
+     * 修改地址信息
+     * @param addressBook
+     * @return
+     */
+    void update(AddressBook addressBook);
     
 }

@@ -67,5 +67,15 @@ public class AddressBookServiceImpl implements AddressBookService {
         else 
             return null;
     }
+
+    /**
+     * 修改地址信息
+     * @param addressBook
+     * @return
+     */
+    @Override
+    public void update(AddressBook addressBook) {
+        addressBookMapper.update(addressBook);
+    }
     
 }
