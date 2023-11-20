@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,5 +36,18 @@ public class AddressBookController {
         log.info("查询用户地址列表");
         List<AddressBook> list = addressBookService.list();
         return Result.success(list);
+    }
+
+    /**
+     * 新增地址
+     * @param addressBook
+     * @return
+     */
+    @PostMapping
+    @ApiOperation("新增地址")
+    public Result add(@RequestBody AddressBook addressBook) {
+        log.info("新增地址，{}", addressBook);
+        addressBookService.add(addressBook);
+        return Result.success();
     }
 }
