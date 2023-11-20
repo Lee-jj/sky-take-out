@@ -52,5 +52,20 @@ public class AddressBookServiceImpl implements AddressBookService {
         List<AddressBook> list = addressBookMapper.list(addressBook);
         return list.get(0);
     }
+
+    /**
+     * 查询默认地址
+     * @return
+     */
+    @Override
+    public AddressBook getDefaultAddress() {
+        Long userId = BaseContext.getCurrentId();
+        AddressBook addressBook = AddressBook.builder().userId(userId).isDefault(1).build();
+        List<AddressBook> list = addressBookMapper.list(addressBook);
+        if (list != null && list.size() > 0)
+            return list.get(0);
+        else 
+            return null;
+    }
     
 }

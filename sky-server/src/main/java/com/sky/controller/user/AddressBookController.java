@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sky.constant.MessageConstant;
 import com.sky.entity.AddressBook;
 import com.sky.result.Result;
 import com.sky.service.AddressBookService;
@@ -64,4 +65,23 @@ public class AddressBookController {
         AddressBook addressBook = addressBookService.getById(id);
         return Result.success(addressBook);
     }
+
+    /**
+     * 查询默认地址
+     * @return
+     */
+    @GetMapping("/default")
+    @ApiOperation("查询默认地址")
+    public Result<AddressBook> getDefaultAddress() {
+        log.info("查询默认地址");
+        AddressBook addressBook = addressBookService.getDefaultAddress();
+        
+        // 能查到
+        if (addressBook!= null) {
+            return Result.success(addressBook);
+        }
+
+        // 查不到
+        return Result.error(MessageConstant.FIALT_TO_GET_DEFAULT_ADDRESS);
+    } 
 }
