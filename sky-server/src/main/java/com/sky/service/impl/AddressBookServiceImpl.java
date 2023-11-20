@@ -23,7 +23,8 @@ public class AddressBookServiceImpl implements AddressBookService {
     @Override
     public List<AddressBook> list() {
         Long userId = BaseContext.getCurrentId();
-        List<AddressBook> list = addressBookMapper.getByUserId(userId);
+        AddressBook addressBook = AddressBook.builder().userId(userId).build();
+        List<AddressBook> list = addressBookMapper.list(addressBook);
         return list;
     }
 
@@ -47,7 +48,8 @@ public class AddressBookServiceImpl implements AddressBookService {
      */
     @Override
     public AddressBook getById(Long id) {
-        List<AddressBook> list = addressBookMapper.listById(id);
+        AddressBook addressBook = AddressBook.builder().id(id).build();
+        List<AddressBook> list = addressBookMapper.list(addressBook);
         return list.get(0);
     }
     
