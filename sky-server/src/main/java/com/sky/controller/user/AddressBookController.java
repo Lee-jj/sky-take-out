@@ -3,6 +3,7 @@ package com.sky.controller.user;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -109,6 +110,19 @@ public class AddressBookController {
     public Result setDefault(@RequestBody AddressBook addressBook) {
         log.info("设置默认地址，{}", addressBook);
         addressBookService.setDefault(addressBook);
+        return Result.success();
+    }
+
+    /**
+     * 根据id删除地址
+     * @param id
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("根据id删除地址")
+    public Result deleteById(Long id) {
+        log.info("根据id删除地址，{}", id);
+        addressBookService.deleteById(id);
         return Result.success();
     }
 }

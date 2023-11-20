@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
@@ -39,4 +40,12 @@ public interface AddressBookMapper {
      */
     @Update("update address_book set is_default = #{isDefault} where user_id = #{userId}")
     void updateDefalutByUserId(AddressBook addressBook);
+
+    /**
+     * 根据id删除地址
+     * @param id
+     * @return
+     */
+    @Delete("delete from address_book where id = #{id}")
+    void deleteById(Long id);
 }
