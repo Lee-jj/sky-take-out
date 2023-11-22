@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import com.sky.entity.Orders;
 
@@ -12,5 +13,19 @@ public interface OrderMapper {
      * @param orders
      */
     void insert(Orders orders);
+
+    /**
+     * 根据订单号查找订单
+     * @param outTradeNo
+     * @return
+     */
+    @Select("select * from orders where number = #{outTradeNo}")
+    Orders getByNumber(String outTradeNo);
+
+    /**
+     * 更新订单
+     * @param orders
+     */
+    void update(Orders orders);
     
 }
