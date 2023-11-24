@@ -78,7 +78,7 @@ public class OrderController {
      * @param id
      * @return
      */
-    @GetMapping("orderDetail/{id}")
+    @GetMapping("/orderDetail/{id}")
     @ApiOperation("查询订单详情")
     public Result<OrderVO> detail(@PathVariable Long id) {
         log.info("查询订单详情，{}", id);
@@ -104,7 +104,7 @@ public class OrderController {
      * @param id
      * @return
      */
-    @PostMapping("repetition/{id}")
+    @PostMapping("/repetition/{id}")
     @ApiOperation("再来一单")
     public Result repetition(@PathVariable Long id) {
         log.info("再来一单，{}", id);
