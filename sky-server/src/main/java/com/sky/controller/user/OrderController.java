@@ -2,6 +2,7 @@ package com.sky.controller.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -69,5 +71,18 @@ public class OrderController {
         log.info("查询用户历史订单,page:{},pageSize:{},status:{}", page, pageSize, status);
         PageResult pageResult = orderService.page(page, pageSize, status);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 查询订单详情
+     * @param id
+     * @return
+     */
+    @GetMapping("orderDetail/{id}")
+    @ApiOperation("查询订单详情")
+    public Result<OrderVO> detail(@PathVariable Long id) {
+        log.info("查询订单详情，{}", id);
+        OrderVO orderVO = orderService.detail(id);
+        return Result.success(orderVO);
     }
 }
