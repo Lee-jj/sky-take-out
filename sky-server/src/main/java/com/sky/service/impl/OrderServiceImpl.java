@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
@@ -24,9 +27,11 @@ import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -137,6 +142,41 @@ public class OrderServiceImpl implements OrderService{
                .checkoutTime(LocalDateTime.now())
                .build();
         orderMapper.update(orders);
+    }
+
+    /**
+     * 查询用户历史订单
+     * @param page
+     * @param pageSize
+     * @param status
+     * @return
+     */
+    @Override
+    public PageResult page(Integer page, Integer pageSize, Integer status) {
+        PageHelper.startPage(page, pageSize);
+        OrdersPageQueryDTO orderPageQueryDTO = new OrdersPageQueryDTO();
+        orderPageQueryDTO.setStatus(status);
+        orderPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        // 分页查询订单
+        Page<Orders> p = orderMapper.page(orderPageQueryDTO);
+
+        // 封装查询结果
+        List<OrderVO> list = new ArrayList<>();
+        if (p != null && p.size() > 0) {
+            for (Orders orders: p) {
+                Long orderId = orders.getId();
+                // 根据订单id查找订单详细表
+                List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
+
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                orderVO.setOrderDetailList(orderDetails);
+
+                list.add(orderVO);
+            }
+        }
+
+        return new PageResult(p.getTotal(), list);
     }
     
 }
