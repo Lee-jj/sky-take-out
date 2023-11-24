@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/user/shoppingCart")
-@Api(tags = "购物车相关接口")
+@Api(tags = "用户购物车相关接口")
 @Slf4j
 public class ShoppingCartController {
     

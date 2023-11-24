@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController("userSetmealController")
 @RequestMapping("/user/setmeal")
-@Api
+@Api(tags = "用户套餐相关接口")
 @Slf4j
 public class SetmealController {
 
