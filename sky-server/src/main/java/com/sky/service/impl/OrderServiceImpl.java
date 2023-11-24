@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,6 +233,27 @@ public class OrderServiceImpl implements OrderService{
         orders.setCancelTime(LocalDateTime.now());
         orders.setCancelReason("用户取消");
         orderMapper.update(orders);
+    }
+
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
+    @Override
+    public void repetition(Long id) {
+        // 再来一单就是将原订单中的商品重新加入到购物车中
+        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(id);
+
+        List<ShoppingCart> shoppingCarts = orderDetails.stream().map(x -> {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(x, shoppingCart, "id");
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            shoppingCart.setUserId(BaseContext.getCurrentId());
+            return shoppingCart;
+        }).collect(Collectors.toList());
+
+        shoppingCartMapper.insertBatch(shoppingCarts);
     }
     
 }
