@@ -18,6 +18,7 @@ import com.sky.context.BaseContext;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
@@ -332,6 +333,29 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = Orders.builder().id(ordersConfirmDTO.getId()).status(Orders.CONFIRMED).build();
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 商家拒单
+     * @param ordersRejectionDTO
+     * @return
+     */
+    @Override
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        // 根据id查询订单，只有状态2才可以拒单
+        Orders ordersDB = orderMapper.getById(ordersRejectionDTO.getId());
+        if (ordersDB == null || ! ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) 
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        
+        Orders orders = new Orders();
+        if (ordersDB.getPayStatus().equals(Orders.PAID))
+            orders.setPayStatus(Orders.REFUND);
+        
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setId(ordersRejectionDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
     
