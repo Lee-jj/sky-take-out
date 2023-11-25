@@ -80,7 +80,10 @@ public class OrderServiceImpl implements OrderService{
         orders.setPhone(addressBookList.get(0).getPhone());
         orders.setConsignee(addressBookList.get(0).getConsignee());
         orders.setUserId(userId);
-
+        // 获取地址数据，添加到订单表中
+        String address = getAddress(addressBookList.get(0));
+        orders.setAddress(address);
+        
         orderMapper.insert(orders);
 
         List<OrderDetail> orderDetailsList = new ArrayList<>();
@@ -103,6 +106,15 @@ public class OrderServiceImpl implements OrderService{
                 .orderNumber(orders.getNumber())
                 .orderAmount(orders.getAmount())
                 .build();
+    }
+
+    /**
+     * 获取地址字符串
+     * @param addressBook
+     * @return
+     */
+    private String getAddress(AddressBook addressBook) {
+        return addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail();
     }
 
     /**
