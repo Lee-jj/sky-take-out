@@ -368,6 +368,9 @@ public class OrderServiceImpl implements OrderService{
     public void adminCancel(OrdersCancelDTO ordersCancelDTO) {
         // 商家取消订单权限高，何种情况都可以直接取消，用户付钱了旧退款后取消
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
 
         Orders orders = new Orders();
         if (ordersDB.getPayStatus().equals(Orders.PAID)) {
@@ -380,6 +383,23 @@ public class OrderServiceImpl implements OrderService{
         orders.setId(ordersCancelDTO.getId());
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     * @param id
+     * @return
+     */
+    @Override
+    public void delivery(Long id) {
+        Orders ordersDB = orderMapper.getById(id);
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.CONFIRMED))
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        
+        Orders orders = new Orders();
+        orders.setId(id);
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
         orderMapper.update(orders);
     }
     
