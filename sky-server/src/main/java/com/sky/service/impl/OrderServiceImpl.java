@@ -2,17 +2,23 @@ package com.sky.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.DistanceConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersCancelDTO;
@@ -33,6 +39,7 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.utils.HttpClientUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
@@ -49,6 +56,14 @@ public class OrderServiceImpl implements OrderService{
     private AddressBookMapper addressBookMapper;
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
+
+    @Value("${sky.shop.address}")
+    private String shopAddress;
+    @Value("${sky.baidu.ak}")
+    private String baiduAk;
+
+    private static final String DISTANCE_URL = "https://api.map.baidu.com/geocoding/v3";
+    private static final String PATH_URL = "https://api.map.baidu.com/directionlite/v1/riding";
 
     /**
      * 用户提交订单
@@ -72,6 +87,10 @@ public class OrderServiceImpl implements OrderService{
         if (shoppingCartList == null || shoppingCartList.size() == 0) {
             throw new AddressBookBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
+
+        // 1.1 判断下单地址是否在店铺配送范围内
+        String address = getAddress(addressBookList.get(0));
+        checkDistance(address);
         
         // 2. 向订单表中插入一条数据
         Orders orders = new Orders();
@@ -84,7 +103,6 @@ public class OrderServiceImpl implements OrderService{
         orders.setConsignee(addressBookList.get(0).getConsignee());
         orders.setUserId(userId);
         // 获取地址数据，添加到订单表中
-        String address = getAddress(addressBookList.get(0));
         orders.setAddress(address);
         
         orderMapper.insert(orders);
@@ -421,4 +439,69 @@ public class OrderServiceImpl implements OrderService{
         orderMapper.update(orders);
     }
     
+    /**
+     * 计算下单地址与商铺的距离
+     * @param TargetAddress
+     */
+    public void checkDistance(String TargetAddress) {
+
+        // 1. 获取店铺的经纬度
+        Map<String, String> map = new HashMap<>();
+        map.put("address", shopAddress);
+        map.put("output", "json");
+        map.put("ak", baiduAk);
+        
+        // 发送Get请求
+        String shopLocation = HttpClientUtil.doGet(DISTANCE_URL, map);
+
+        JSONObject parseObject = JSON.parseObject(shopLocation);
+        if (!parseObject.getString("status").equals("0"))
+            throw new OrderBusinessException(MessageConstant.SHOP_LOCATION_RESOLVE_FAILED);
+        
+        // 获取店铺经纬度
+        JSONObject location = parseObject.getJSONObject("result").getJSONObject("location");
+        Double shopLat = Double.parseDouble(location.getString("lat"));
+        Double shopLng = Double.parseDouble(location.getString("lng"));
+        String shopLatLng = String.format("%.6f", shopLat) + "," + String.format("%.6f", shopLng);
+
+
+        // 2. 获取用户地址的经纬度
+        map.clear();
+        map.put("address", TargetAddress);
+        map.put("output", "json");
+        map.put("ak", baiduAk);
+
+        String userLocation = HttpClientUtil.doGet(DISTANCE_URL, map);
+        parseObject = JSON.parseObject(userLocation);
+        if (!parseObject.getString("status").equals("0"))
+            throw new OrderBusinessException(MessageConstant.USER_LOCATION_RESOLVE_FAILED);
+        
+        location = parseObject.getJSONObject("result").getJSONObject("location");
+        Double userLat = Double.parseDouble(location.getString("lat"));
+        Double userLng = Double.parseDouble(location.getString("lng"));
+        String userLatLng = String.format("%.6f", userLat) + "," + String.format("%.6f", userLng);
+
+
+        // 3. 计算规划路径的距离
+        map.clear();
+        map.put("ak", baiduAk);
+        map.put("origin", shopLatLng);
+        map.put("destination", userLatLng);
+        map.put("steps_info", "0");    // 不展示路线分段详情
+
+        String path = HttpClientUtil.doGet(PATH_URL, map);
+        parseObject = JSON.parseObject(path);
+        if (!parseObject.getString("status").equals("0"))
+            throw new OrderBusinessException(MessageConstant.PATH_PLANNING_RESOLVE_FAILED);
+        
+        // 获得规划路径的距离，单位米
+        JSONObject result = parseObject.getJSONObject("result");
+        JSONArray routes = (JSONArray) result.get("routes");
+        Integer distance = (Integer) ((JSONObject) routes.get(0)).get("distance");
+
+
+        // 4. 距离超过xxx抛出异常
+        if (distance > DistanceConstant.MAX_DELIVERY_DISTANCE)
+            throw new OrderBusinessException(MessageConstant.OVER_DELIVERY_DISTANCE);
+    }
 }

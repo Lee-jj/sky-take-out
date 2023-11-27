@@ -26,5 +26,8 @@ public class MessageConstant {
     public static final String ORDER_NOT_FOUND = "订单不存在";
 
     public static final String ALREADY_EXISTS = "已存在";
-
+    public static final String SHOP_LOCATION_RESOLVE_FAILED = "店铺位置解析失败";
+    public static final String USER_LOCATION_RESOLVE_FAILED = "用户位置解析失败";
+    public static final String PATH_PLANNING_RESOLVE_FAILED = "路径规划解析失败";
+    public static final String OVER_DELIVERY_DISTANCE = "超出配送距离，请选择其他地址";
 }
