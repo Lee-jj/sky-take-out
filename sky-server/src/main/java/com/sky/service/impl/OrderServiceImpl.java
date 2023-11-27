@@ -15,6 +15,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
@@ -354,6 +355,29 @@ public class OrderServiceImpl implements OrderService{
         
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
         orders.setId(ordersRejectionDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 商家取消订单
+     * @return
+     */
+    @Override
+    public void adminCancel(OrdersCancelDTO ordersCancelDTO) {
+        // 商家取消订单权限高，何种情况都可以直接取消，用户付钱了旧退款后取消
+        Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        Orders orders = new Orders();
+        if (ordersDB.getPayStatus().equals(Orders.PAID)) {
+            // 用户已经付钱，执行退款
+            // 无法调用小程序接口，直接修改数据库状态
+            orders.setPayStatus(Orders.REFUND);
+        }
+
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+        orders.setId(ordersCancelDTO.getId());
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
