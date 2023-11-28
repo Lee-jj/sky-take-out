@@ -12,4 +12,14 @@
         </foreach>
     </insert>
 
+    <!-- getTop10ByTime --> 
+    <select id="getTop10ByTime" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.name, sum(od.number) number
+        from order_detail as od, orders as o
+        where od.order_id = o.id and o.order_time &gt; #{begin} and o.order_time &lt; #{end} and o.status = #{status}
+        group by od.name
+        order by number desc
+        limit 10
+    </select>
+
 </mapper>
