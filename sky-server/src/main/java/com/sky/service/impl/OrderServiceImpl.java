@@ -516,4 +516,23 @@ public class OrderServiceImpl implements OrderService{
         if (distance > DistanceConstant.MAX_DELIVERY_DISTANCE)
             throw new OrderBusinessException(MessageConstant.OVER_DELIVERY_DISTANCE);
     }
+
+    /**
+     * 用户催单
+     * @param id
+     * @return
+     */
+    @Override
+    public void reminder(Long id) {
+        Orders ordersDB = orderMapper.getById(id);
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED))
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        
+        Map map = new HashMap();
+        map.put("type", OrderWsConstant.ORDER_URGE);
+        map.put("orderId", id);
+        map.put("content", "订单号：" + ordersDB.getNumber());
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+    }
 }
