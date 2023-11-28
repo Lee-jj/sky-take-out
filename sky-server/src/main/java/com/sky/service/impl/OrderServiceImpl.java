@@ -20,6 +20,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.DistanceConstant;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.OrderWsConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
@@ -44,6 +45,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -56,6 +58,8 @@ public class OrderServiceImpl implements OrderService{
     private AddressBookMapper addressBookMapper;
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @Value("${sky.shop.address}")
     private String shopAddress;
@@ -177,6 +181,14 @@ public class OrderServiceImpl implements OrderService{
                .checkoutTime(LocalDateTime.now())
                .build();
         orderMapper.update(orders);
+
+        // 通过websocket向商家客户端发送接单提醒消息
+        Map map = new HashMap();
+        map.put("type", OrderWsConstant.ORDER_REMINDER);
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + outTradeNo);
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**
