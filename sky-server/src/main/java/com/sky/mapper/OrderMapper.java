@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -69,4 +70,6 @@ public interface OrderMapper {
      */
     @Select("select sum(amount) from orders where order_time >= #{beginTime} and order_time <= #{endTime} and status = #{status}")
     Double getSumByTimeAndStatus(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
+
+    Integer getOrderCountByTimeAndStatus(Map map);
 }

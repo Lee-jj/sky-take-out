@@ -16,6 +16,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 
@@ -95,6 +96,48 @@ public class ReportServiceImpl implements ReportService {
                     .totalUserList(StringUtils.join(totalUserList, ","))
                     .newUserList(StringUtils.join(newUserList, ","))
                     .build();
+    }
+
+    /**
+     * 订单统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public OrderReportVO getOrdersStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        List<Integer> orderCountList = new ArrayList<>();
+        List<Integer> validOrderCountList = new ArrayList<>();
+        Integer totalOrderCount = 0;
+        Integer validOrderCount = 0;
+
+        for (LocalDate date = begin; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {
+            dateList.add(date);
+
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+
+            Map map = new HashMap();
+            map.put("begin", beginTime);
+            map.put("end", endTime);
+            Integer totalCount = orderMapper.getOrderCountByTimeAndStatus(map);
+            map.put("status", Orders.COMPLETED);
+            Integer validCount = orderMapper.getOrderCountByTimeAndStatus(map);
+            orderCountList.add(totalCount);
+            totalOrderCount += totalCount;
+            validOrderCountList.add(validCount);
+            validOrderCount += validCount;
+        }
+
+        return OrderReportVO.builder()
+               .dateList(StringUtils.join(dateList, ","))
+               .orderCountList(StringUtils.join(orderCountList, ","))
+               .validOrderCountList(StringUtils.join(validOrderCountList, ","))
+               .totalOrderCount(totalOrderCount)
+               .validOrderCount(validOrderCount)
+               .orderCompletionRate(validOrderCount.doubleValue() / totalOrderCount.doubleValue())
+               .build();
     }
     
 }
