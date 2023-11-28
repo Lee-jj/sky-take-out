@@ -1,5 +1,7 @@
 package com.sky.mapper;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -21,4 +23,11 @@ public interface UserMapper {
      * @param user
      */
     void insert(User user);
+
+    /**
+     * 根据时间动态查询用户数量
+     * @param map
+     * @return
+     */
+    Integer getSumByTime(Map map);
 }
