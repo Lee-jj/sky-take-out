@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 
 import com.sky.constant.StatusConstant;
 import com.sky.entity.Orders;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
+import com.sky.vo.DishOverViewVO;
 import com.sky.vo.SetmealOverViewVO;
 
 @Service
@@ -26,6 +28,8 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private OrderMapper orderMapper;
     @Autowired
     private SetmealMapper setmealMapper;
+    @Autowired
+    private DishMapper dishMapper;
 
     /**
      * 查询今日运营数据
@@ -77,6 +81,23 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .sold(sold)
                 .discontinued(discontinued)
                 .build();
+    }
+
+    /**
+     * 查询菜品总览
+     * @return
+     */
+    @Override
+    public DishOverViewVO getOverviewDishes() {
+        // 起售数量
+        Integer sold = dishMapper.getCountByStatus(StatusConstant.ENABLE);
+        // 停售数量
+        Integer discontinued = dishMapper.getCountByStatus(StatusConstant.DISABLE);
+
+        return DishOverViewVO.builder()
+               .sold(sold)
+               .discontinued(discontinued)
+               .build();
     }
     
 }
