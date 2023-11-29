@@ -49,6 +49,11 @@ public interface OrderMapper {
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
 
+    /**
+     * 根据状态查询订单数量
+     * @param status
+     * @return
+     */
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer status);
 
@@ -71,5 +76,8 @@ public interface OrderMapper {
     @Select("select sum(amount) from orders where order_time >= #{beginTime} and order_time <= #{endTime} and status = #{status}")
     Double getSumByTimeAndStatus(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 
+    /**
+     * 根据订单状态和起始时间查询订单数量
+     */
     Integer getOrderCountByTimeAndStatus(Map map);
 }
