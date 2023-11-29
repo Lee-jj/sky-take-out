@@ -9,6 +9,7 @@ import com.sky.result.Result;
 import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
 import com.sky.vo.DishOverViewVO;
+import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.SetmealOverViewVO;
 
 import io.swagger.annotations.Api;
@@ -58,5 +59,17 @@ public class WorkspaceController {
         log.info("查询菜品总览");
         DishOverViewVO dishOverViewVO = workspaceService.getOverviewDishes();
         return Result.success(dishOverViewVO);
+    }
+
+    /**
+     * 查询订单总览
+     * @return
+     */
+    @GetMapping("/overviewOrders")
+    @ApiOperation("查询订单总览")
+    public Result<OrderOverViewVO> overviewOrders() {
+        log.info("查询订单总览");
+        OrderOverViewVO orderOverViewVO = workspaceService.getOverviewOrders();
+        return Result.success(orderOverViewVO);
     }
 }

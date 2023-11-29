@@ -17,6 +17,7 @@ import com.sky.mapper.UserMapper;
 import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
 import com.sky.vo.DishOverViewVO;
+import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.SetmealOverViewVO;
 
 @Service
@@ -97,6 +98,45 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return DishOverViewVO.builder()
                .sold(sold)
                .discontinued(discontinued)
+               .build();
+    }
+
+    /**
+     * 查询订单总览
+     * @return
+     */
+    @Override
+    public OrderOverViewVO getOverviewOrders() {
+
+        Map map = new HashMap();
+        map.put("begin", LocalDateTime.now().with(LocalTime.MIN));
+        map.put("end", LocalDateTime.now().with(LocalTime.MAX));
+
+        // 全部订单数
+        Integer allOrders = orderMapper.getOrderCountByTimeAndStatus(map);
+
+        // 已取消订单数
+        map.put("status", Orders.CANCELLED);
+        Integer cancelledOrders = orderMapper.getOrderCountByTimeAndStatus(map);
+
+        // 已完成订单数
+        map.put("status", Orders.COMPLETED);
+        Integer completedOrders = orderMapper.getOrderCountByTimeAndStatus(map);
+
+        // 待派送(已接单)订单数
+        map.put("status", Orders.CONFIRMED);
+        Integer deliveredOrders = orderMapper.getOrderCountByTimeAndStatus(map);
+
+        // 待接单订单数
+        map.put("status", Orders.TO_BE_CONFIRMED);
+        Integer waitingOrders = orderMapper.getOrderCountByTimeAndStatus(map);
+
+        return OrderOverViewVO.builder()
+               .allOrders(allOrders)
+               .cancelledOrders(cancelledOrders)
+               .completedOrders(completedOrders)
+               .waitingOrders(waitingOrders)
+               .deliveredOrders(deliveredOrders)
                .build();
     }
     
