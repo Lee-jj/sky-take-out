@@ -8,11 +8,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sky.constant.StatusConstant;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
+import com.sky.vo.SetmealOverViewVO;
 
 @Service
 public class WorkspaceServiceImpl implements WorkspaceService {
@@ -21,6 +24,8 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private UserMapper userMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private SetmealMapper setmealMapper;
 
     /**
      * 查询今日运营数据
@@ -55,6 +60,22 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .orderCompletionRate(orderCount == 0 ? 0 : validOrderCount * 1.0 / orderCount)
                 .unitPrice(validOrderCount == 0 ? 0 : turnover / validOrderCount)
                 .newUsers(newUsers)
+                .build();
+    }
+
+    /**
+     * 查询套餐总览
+     * @return
+     */
+    @Override
+    public SetmealOverViewVO getOverviewSetmeals() {
+        // 起售数量
+        Integer sold = setmealMapper.getCountByStatus(StatusConstant.ENABLE);
+        // 停售数量
+        Integer discontinued = setmealMapper.getCountByStatus(StatusConstant.DISABLE);
+        return SetmealOverViewVO.builder()
+                .sold(sold)
+                .discontinued(discontinued)
                 .build();
     }
     

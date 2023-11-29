@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sky.result.Result;
 import com.sky.service.WorkspaceService;
 import com.sky.vo.BusinessDataVO;
+import com.sky.vo.SetmealOverViewVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,5 +33,17 @@ public class WorkspaceController {
         log.info("查询今日运营数据");
         BusinessDataVO businessDataVO = workspaceService.getBusinessData();
         return Result.success(businessDataVO);
+    }
+
+    /**
+     * 查询套餐总览
+     * @return
+     */
+    @GetMapping("/overviewSetmeals")
+    @ApiOperation("查询套餐总览")
+    public Result<SetmealOverViewVO> overviewSetmeals() {
+        log.info("查询套餐总览");
+        SetmealOverViewVO setmealOverViewVO = workspaceService.getOverviewSetmeals();
+        return Result.success(setmealOverViewVO);
     }
 }

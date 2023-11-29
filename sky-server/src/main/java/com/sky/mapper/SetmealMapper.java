@@ -64,4 +64,12 @@ public interface SetmealMapper {
      */
     @Select("select * from setmeal where category_id = #{categoryId} and status = 1")
     List<Setmeal> getByCategoryId(Long categoryId);
+
+    /**
+     * 根据状态查询套餐数量
+     * @param status
+     * @return
+     */
+    @Select("select count(id) from setmeal where status = #{status}")
+    Integer getCountByStatus(Integer status);
 }

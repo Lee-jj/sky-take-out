@@ -1,6 +1,7 @@
 package com.sky.service;
 
 import com.sky.vo.BusinessDataVO;
+import com.sky.vo.SetmealOverViewVO;
 
 public interface WorkspaceService {
 
@@ -9,5 +10,11 @@ public interface WorkspaceService {
      * @return
      */
     BusinessDataVO getBusinessData();
+
+    /**
+     * 查询套餐总览
+     * @return
+     */
+    SetmealOverViewVO getOverviewSetmeals();
     
 }
