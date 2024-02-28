@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import com.sky.entity.TUser;
 import com.sky.entity.User;
 
 @Mapper
@@ -30,4 +31,18 @@ public interface UserMapper {
      * @return
      */
     Integer getSumByTime(Map map);
+
+    /**
+     * 根据手机号查询用户
+     * @param phone
+     * @return
+     */
+    @Select("select * from t_user where phone = #{phone}")
+    TUser getByPhone(String phone);
+
+    /**
+     * 插入用户暂时
+     * @param user
+     */
+    void insertTUser(TUser user);
 }

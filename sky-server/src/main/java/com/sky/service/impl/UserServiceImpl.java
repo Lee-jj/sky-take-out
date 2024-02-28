@@ -3,16 +3,24 @@ package com.sky.service.impl;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.UserLoginDTO;
+import com.sky.dto.UserLoginDTOv1;
+import com.sky.entity.TUser;
 import com.sky.entity.User;
+import com.sky.exception.AccountLockedException;
+import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.LoginFailedException;
+import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.UserMapper;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.UserService;
@@ -71,6 +79,50 @@ public class UserServiceImpl implements UserService {
         JSONObject jsonObject = JSON.parseObject(json);
         String openid = jsonObject.getString("openid");
         return openid;
+    }
+
+    @Override
+    public TUser login(UserLoginDTOv1 userLoginDTO) {
+        
+        String phone = userLoginDTO.getPhone();
+        String password = userLoginDTO.getPassword();
+
+        // TODO 判断手机号是否合法
+
+        TUser user = userMapper.getByPhone(phone);
+
+        if (user == null) {
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
+
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
+        if (!password.equals(user.getPassword())) {
+            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        }
+        if (user.getStatus() == StatusConstant.DISABLE) {
+            throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
+        }
+
+        return user;
+    }
+
+    /**
+     * 新增用户
+     */
+    @Override
+    public void save(UserLoginDTOv1 userLoginDTO) {
+        // TODO 判断手机号是否合法
+
+        TUser user = new TUser();
+
+        user.setPhone(userLoginDTO.getPhone());
+        user.setPassword(DigestUtils.md5DigestAsHex(userLoginDTO.getPassword().getBytes()));
+        user.setStatus(StatusConstant.ENABLE);
+        String str = UUID.randomUUID().toString();
+        String uuid = str.substring(0, 27);
+        user.setUserName("user_" + uuid);
+
+        userMapper.insertTUser(user);
     }
     
 }
