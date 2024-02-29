@@ -152,4 +152,12 @@ public class OrderController {
         PageResult pageResult = orderService.pageAvaliableOrder(page, pageSize);
         return Result.success(pageResult);
     }
+
+    @PostMapping("/seckill/{id}")
+    @ApiOperation("用户抢单")
+    public Result doSeckill(@PathVariable Long id) {
+        log.info("用户抢单，id:{}", id);
+        orderService.doSeckill(id);
+        return Result.success();
+    }
 }

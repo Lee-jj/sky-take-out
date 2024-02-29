@@ -133,4 +133,10 @@ public interface OrderService {
      * @return
      */
     PageResult pageAvaliableOrder(Integer page, Integer pageSize);
+
+    /**
+     * 用户抢单
+     * @param id
+     */
+    void doSeckill(Long id);
 }

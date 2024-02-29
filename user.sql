@@ -40,3 +40,13 @@ CREATE TABLE `t_order_detail` (
   `amount` decimal(10,2) NOT NULL COMMENT '金额',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='订单明细表';
+
+
+DROP TABLE IF EXISTS `t_order_rush`;
+CREATE TABLE `t_order_rush` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `order_id` bigint NOT NULL COMMENT '订单id',
+  `user_id` bigint NOT NULL COMMENT '抢单用户',
+  `order_time` datetime DEFAULT NULL COMMENT '抢单时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='已抢订单表';

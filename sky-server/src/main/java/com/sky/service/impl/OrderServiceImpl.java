@@ -34,6 +34,7 @@ import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
 import com.sky.entity.TOrder;
+import com.sky.entity.TOrderRush;
 import com.sky.entity.TUser;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -622,5 +623,30 @@ public class OrderServiceImpl implements OrderService{
             }
         }
         return new PageResult(p.getTotal(), list);
+    }
+
+    /**
+     * 用户抢单
+     * @param id
+     */
+    @Override
+    public void doSeckill(Long id) {
+        
+        // 根据订单id查询订单表中该订单的status是否为2（待接单）
+        TOrder order = orderMapper.getByIdv1(id);
+        if (order == null || !order.getStatus().equals(TOrder.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException("当前订单不存在或已经被接单");
+        }
+
+        // 修改订单表中的订单状态为已接单
+        order.setStatus(TOrder.CONFIRMED);
+        orderMapper.updatev1(order);
+
+        // 向抢单表中添加记录
+        TOrderRush orderRush = new TOrderRush();
+        orderRush.setOrderId(order.getId());
+        orderRush.setUserId(BaseContext.getCurrentId());
+        orderRush.setOrderTime(LocalDateTime.now());
+        orderMapper.insertRush(orderRush);
     }
 }

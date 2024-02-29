@@ -11,6 +11,7 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.entity.TOrder;
+import com.sky.entity.TOrderRush;
 
 @Mapper
 public interface OrderMapper {
@@ -94,4 +95,24 @@ public interface OrderMapper {
      * @return
      */
     Page<TOrder> pagev1(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 根据id查询t_order
+     * @param id
+     * @return
+     */
+    @Select("select * from t_order where id = #{id}")
+    TOrder getByIdv1(Long id);
+
+    /**
+     * 更新t_order
+     * @param order
+     */
+    void updatev1(TOrder order);
+
+    /**
+     * 插入抢单表
+     * @param order
+     */
+    void insertRush(TOrderRush order);
 }
