@@ -125,4 +125,12 @@ public interface OrderService {
      * @return
      */
     OrderSubmitVO submitv1(OrderSubmitDTOv1 orderSubmitDTO);
+
+    /**
+     * 分页查询当前可接订单
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    PageResult pageAvaliableOrder(Integer page, Integer pageSize);
 }

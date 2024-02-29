@@ -34,4 +34,12 @@ public interface OrderDetailMapper {
      */
     void insertBatchv1(List<OrderDetail> orderDetailsList);
 
+    /**
+     * 根据订单id查询菜品列表
+     * @param orderId
+     * @return
+     */
+    @Select("select * from t_order_detail where order_id = #{orderId}")
+    List<OrderDetail> listByOrderId(Long orderId);
+
 }

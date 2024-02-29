@@ -138,4 +138,18 @@ public class OrderController {
         OrderSubmitVO orderSubmitVO = orderService.submitv1(orderSubmitDTO);
         return Result.success(orderSubmitVO);
     }
+
+    /**
+     * 分页查询当前可接订单
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/avaliableOrder")
+    @ApiOperation("查询当前可接订单")
+    public Result<PageResult> pageAvailableOrder(Integer page, Integer pageSize) {
+        log.info("查询当前可接订单: page: {}, pageSize: {}", page, pageSize);
+        PageResult pageResult = orderService.pageAvaliableOrder(page, pageSize);
+        return Result.success(pageResult);
+    }
 }

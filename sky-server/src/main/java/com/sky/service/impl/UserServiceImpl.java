@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void save(UserLoginDTOv1 userLoginDTO) {
-        // TODO 判断手机号是否合法
+        // TODO 判断手机号是否合法，是否重复
 
         TUser user = new TUser();
 

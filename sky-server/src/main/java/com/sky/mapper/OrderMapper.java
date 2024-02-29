@@ -87,4 +87,11 @@ public interface OrderMapper {
      * @param order
      */
     void insertv1(TOrder order);
+
+    /**
+     * 分页查询，返回的是t_order
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    Page<TOrder> pagev1(OrdersPageQueryDTO ordersPageQueryDTO);
 }

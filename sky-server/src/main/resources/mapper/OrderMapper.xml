@@ -59,4 +59,17 @@
         values (#{status}, #{payStatus}, #{amount}, #{address}, #{userId}, #{number}, #{phone}, #{remark}, #{payMethod}, #{orderTime})
     </insert>
 
+    <!-- pagev1 --> 
+    <select id="pagev1" resultType="com.sky.entity.TOrder">
+        select * from t_order
+        <where>
+            <if test="userId != null"> and user_id = #{userId} </if>
+            <if test="status != null"> and status = #{status} </if>
+            <if test="phone != null"> and phone = #{phone} </if>
+            <if test="number != null"> and number = #{number} </if>
+            <if test="beginTime != null and endTime != null"> and order_time between #{beginTime} and #{endTime} </if>
+        </where>
+        order by order_time desc
+    </select>
+
 </mapper>

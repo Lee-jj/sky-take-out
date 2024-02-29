@@ -593,4 +593,34 @@ public class OrderServiceImpl implements OrderService{
                 .orderTime(order.getOrderTime())
                 .build();
     }
+
+    /**
+     * 分页查询当前可接订单
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageResult pageAvaliableOrder(Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        // 只有待接单状态的订单会被查询到
+        ordersPageQueryDTO.setStatus(Orders.TO_BE_CONFIRMED);
+        // 分页查询结果
+        Page<TOrder> p = orderMapper.pagev1(ordersPageQueryDTO);
+
+        // 封装查询结果
+        List<OrderVO> list = new ArrayList<>();
+        if (p != null && p.size() > 0) {
+            for (TOrder order: p) {
+                Long orderId = order.getId();
+                List<OrderDetail> orderDetails = orderDetailMapper.listByOrderId(orderId);
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(order, orderVO);
+                orderVO.setOrderDetailList(orderDetails);
+                list.add(orderVO);
+            }
+        }
+        return new PageResult(p.getTotal(), list);
+    }
 }
