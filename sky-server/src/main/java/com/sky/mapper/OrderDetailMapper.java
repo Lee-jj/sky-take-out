@@ -27,4 +27,11 @@ public interface OrderDetailMapper {
     List<OrderDetail> getByOrderId(Long orderId);
     
     List<GoodsSalesDTO> getTop10ByTime(LocalDateTime begin, LocalDateTime end, Integer status);
+
+    /**
+     * 批量插入订单明细数据t_order_detail
+     * @param orderDetailsList
+     */
+    void insertBatchv1(List<OrderDetail> orderDetailsList);
+
 }

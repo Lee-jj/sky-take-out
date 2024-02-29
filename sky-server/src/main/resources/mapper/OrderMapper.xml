@@ -53,4 +53,10 @@
         </where>
     </select>
 
+    <!-- insertv1 --> 
+    <insert id="insertv1" useGeneratedKeys="true" keyProperty="id">
+        insert into t_order (status, pay_status, amount, address, user_id, number, phone, remark, pay_method, order_time) 
+        values (#{status}, #{payStatus}, #{amount}, #{address}, #{userId}, #{number}, #{phone}, #{remark}, #{payMethod}, #{orderTime})
+    </insert>
+
 </mapper>

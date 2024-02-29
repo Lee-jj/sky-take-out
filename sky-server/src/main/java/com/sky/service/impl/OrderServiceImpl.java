@@ -22,6 +22,7 @@ import com.sky.constant.DistanceConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.OrderWsConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrderSubmitDTOv1;
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
@@ -32,12 +33,15 @@ import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
+import com.sky.entity.TOrder;
+import com.sky.entity.TUser;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.HttpClientUtil;
@@ -60,6 +64,8 @@ public class OrderServiceImpl implements OrderService{
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private WebSocketServer webSocketServer;
+    @Autowired
+    private UserMapper userMapper;
 
     @Value("${sky.shop.address}")
     private String shopAddress;
@@ -534,5 +540,57 @@ public class OrderServiceImpl implements OrderService{
         map.put("content", "订单号：" + ordersDB.getNumber());
         String json = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(json);
+    }
+
+    /**
+     * 下单
+     */
+    @Override
+    public OrderSubmitVO submitv1(OrderSubmitDTOv1 orderSubmitDTO) {
+        
+        // 判断地址是否为空，购物车是否为空
+        if (orderSubmitDTO.getAddress() == null) {
+            throw new AddressBookBusinessException("地址不合法");
+        }
+        
+        Long userId = BaseContext.getCurrentId();
+        ShoppingCart shoppingCart = ShoppingCart.builder().userId(userId).build();
+        List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
+        if (shoppingCartList == null || shoppingCartList.size() == 0) {
+            throw new AddressBookBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
+        }
+
+        // 新建t订单
+        TOrder order = new TOrder();
+        BeanUtils.copyProperties(orderSubmitDTO, order);
+        order.setOrderTime(LocalDateTime.now());
+        order.setPayStatus(TOrder.PAID);
+        order.setStatus(TOrder.TO_BE_CONFIRMED);
+        order.setNumber(String.valueOf(System.currentTimeMillis()));
+        order.setUserId(userId);
+        // 获取用户手机号
+        TUser user = userMapper.getById(userId);
+        order.setPhone(user.getPhone());
+        orderMapper.insertv1(order);
+
+        // 获取购物车的数据插入到订单明细表
+        List<OrderDetail> orderDetailsList = new ArrayList<>();
+        // 3. 向订单明细表中插入多条数据
+        for (ShoppingCart cart : shoppingCartList) {
+            OrderDetail orderDetail = new OrderDetail();
+            BeanUtils.copyProperties(cart, orderDetail);
+            orderDetail.setOrderId(order.getId());
+            orderDetailsList.add(orderDetail);
+        }
+        orderDetailMapper.insertBatchv1(orderDetailsList);
+        // 清空当前用户的购物车数据
+        shoppingCartMapper.clean(userId);
+
+        return OrderSubmitVO.builder()
+                .id(order.getId())
+                .orderNumber(order.getNumber())
+                .orderAmount(order.getAmount())
+                .orderTime(order.getOrderTime())
+                .build();
     }
 }

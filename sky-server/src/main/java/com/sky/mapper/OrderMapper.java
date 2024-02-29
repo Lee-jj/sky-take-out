@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import com.sky.entity.TOrder;
 
 @Mapper
 public interface OrderMapper {
@@ -80,4 +81,10 @@ public interface OrderMapper {
      * 根据订单状态和起始时间查询订单数量
      */
     Integer getOrderCountByTimeAndStatus(Map map);
+
+    /**
+     * 插入t_order
+     * @param order
+     */
+    void insertv1(TOrder order);
 }

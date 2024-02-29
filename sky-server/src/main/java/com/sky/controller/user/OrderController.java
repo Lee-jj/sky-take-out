@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sky.dto.OrderSubmitDTOv1;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
@@ -123,5 +124,18 @@ public class OrderController {
         log.info("用户催单，{}", id);
         orderService.reminder(id);
         return Result.success();
+    }
+
+    /**
+     * 下单
+     * @param orderSubmitDTO
+     * @return
+     */
+    @PostMapping("/submit/v1")
+    @ApiOperation("用户提交订单v1")
+    public Result<OrderSubmitVO> submitV1(@RequestBody OrderSubmitDTOv1 orderSubmitDTO) {
+        log.info("用户提交订单{}", orderSubmitDTO);
+        OrderSubmitVO orderSubmitVO = orderService.submitv1(orderSubmitDTO);
+        return Result.success(orderSubmitVO);
     }
 }

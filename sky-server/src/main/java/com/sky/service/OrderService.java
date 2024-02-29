@@ -1,5 +1,6 @@
 package com.sky.service;
 
+import com.sky.dto.OrderSubmitDTOv1;
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
@@ -117,4 +118,11 @@ public interface OrderService {
      * @return
      */
     void reminder(Long id);
+
+    /**
+     * 下单
+     * @param orderSubmitDTO
+     * @return
+     */
+    OrderSubmitVO submitv1(OrderSubmitDTOv1 orderSubmitDTO);
 }

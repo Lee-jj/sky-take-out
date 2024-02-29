@@ -45,4 +45,11 @@ public interface UserMapper {
      * @param user
      */
     void insertTUser(TUser user);
+
+    /**
+     * 根据id查询用户
+     * @return
+     */
+    @Select("select * from t_user where id = #{id}")
+    TUser getById(Long id);
 }
