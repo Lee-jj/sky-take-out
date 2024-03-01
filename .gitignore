@@ -5,4 +5,8 @@
 *Test.java
 **/test/
 
+.idea/
+
 **/application-dev.yml
+
+tools/token.txt

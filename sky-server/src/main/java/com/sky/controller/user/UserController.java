@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import com.sky.properties.JwtProperties;
 import com.sky.result.Result;
 import com.sky.service.UserService;
 import com.sky.utils.JwtUtil;
+import com.sky.utils.UserUtil;
 import com.sky.vo.UserLoginVO;
 import com.sky.vo.UserLoginVOv1;
 
@@ -35,6 +37,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private JwtProperties jwtProperties;
+    // @Autowired
+    // private UserUtil userUtil;
 
     /**
      * 微信登录
@@ -106,5 +110,15 @@ public class UserController {
         userService.save(userLoginDTO);
         return Result.success();
     }
+
+    // /**
+    //  * 批量新增测试用户
+    //  * @return
+    //  */
+    // @GetMapping
+    // @ApiOperation("批量新增测试用户")
+    // public void saveAsBacth() {
+    //     userUtil.CreateUser();
+    // }
 
 }

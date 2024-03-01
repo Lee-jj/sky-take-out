@@ -153,6 +153,12 @@ public class OrderController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 用户抢单接口
+     *      优化前qps：256/sec，有超卖问题
+     * @param id
+     * @return
+     */
     @PostMapping("/seckill/{id}")
     @ApiOperation("用户抢单")
     public Result doSeckill(@PathVariable Long id) {
