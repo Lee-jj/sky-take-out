@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +69,8 @@ public class OrderServiceImpl implements OrderService{
     private WebSocketServer webSocketServer;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${sky.shop.address}")
     private String shopAddress;
@@ -574,6 +578,9 @@ public class OrderServiceImpl implements OrderService{
         order.setPhone(user.getPhone());
         orderMapper.insertv1(order);
 
+        // 订单数据存入Redis缓存
+        redisTemplate.opsForValue().set("orderId:" + order.getId(), 1);
+
         // 获取购物车的数据插入到订单明细表
         List<OrderDetail> orderDetailsList = new ArrayList<>();
         // 3. 向订单明细表中插入多条数据
@@ -633,13 +640,29 @@ public class OrderServiceImpl implements OrderService{
     public void doSeckill(Long id) {
         
         // 根据订单id查询订单表中该订单的status是否为2（待接单）
-        TOrder order = orderMapper.getByIdv1(id);
-        if (order == null || !order.getStatus().equals(TOrder.TO_BE_CONFIRMED)) {
+        // TOrder order = orderMapper.getByIdv1(id);
+        // if (order == null || !order.getStatus().equals(TOrder.TO_BE_CONFIRMED)) {
+        //     throw new OrderBusinessException("当前订单不存在或已经被接单");
+        // }
+
+        // 从Redis缓存中查订单数量
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        Long stock = valueOperations.decrement("orderId:" + id);
+        if (stock < 0) {
+            valueOperations.increment("orderId:" + id);
             throw new OrderBusinessException("当前订单不存在或已经被接单");
         }
 
+        // TODO 内存标记法是否可以用在这里？
+
+        // TODO 利用RabbitMQ发送异步消息，完成订单表订单状态更新和向抢单表中添加数据，同时删除Redis缓存中的订单数据
+
         // 修改订单表中的订单状态为已接单
-        order.setStatus(TOrder.CONFIRMED);
+        TOrder order = TOrder.builder()
+                .id(id)
+                .status(TOrder.CONFIRMED)
+                .build();
+        // order.setStatus(TOrder.CONFIRMED);
         orderMapper.updatev1(order);
 
         // 向抢单表中添加记录

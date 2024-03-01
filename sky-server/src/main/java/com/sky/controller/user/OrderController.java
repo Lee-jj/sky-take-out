@@ -155,7 +155,8 @@ public class OrderController {
 
     /**
      * 用户抢单接口
-     *      优化前qps：256/sec，有超卖问题
+     *      优化前5000并发qps：442 633 /sec，有超卖问题
+     *      使用Redis缓存订单后5000并发qps：720 /sec
      * @param id
      * @return
      */
