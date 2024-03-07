@@ -45,6 +45,8 @@ import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.mapper.UserMapper;
+import com.sky.pojo.SeckillMessage;
+import com.sky.rabbitmq.MQSender;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.HttpClientUtil;
@@ -71,6 +73,8 @@ public class OrderServiceImpl implements OrderService{
     private UserMapper userMapper;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private MQSender mqSender;
 
     @Value("${sky.shop.address}")
     private String shopAddress;
@@ -655,21 +659,29 @@ public class OrderServiceImpl implements OrderService{
 
         // TODO 内存标记法是否可以用在这里？
 
-        // TODO 利用RabbitMQ发送异步消息，完成订单表订单状态更新和向抢单表中添加数据，同时删除Redis缓存中的订单数据
-
-        // 修改订单表中的订单状态为已接单
-        TOrder order = TOrder.builder()
-                .id(id)
-                .status(TOrder.CONFIRMED)
+        // 利用RabbitMQ发送异步消息，完成订单表订单状态更新和向抢单表中添加数据，同时删除Redis缓存中的订单数据
+        SeckillMessage seckillMessage = SeckillMessage.builder()
+                .userId(BaseContext.getCurrentId())
+                .orderId(id)
                 .build();
-        // order.setStatus(TOrder.CONFIRMED);
-        orderMapper.updatev1(order);
+        String jsonMessage = JSONObject.toJSONString(seckillMessage);
+        mqSender.sendSeckillMessage(jsonMessage);
 
-        // 向抢单表中添加记录
-        TOrderRush orderRush = new TOrderRush();
-        orderRush.setOrderId(order.getId());
-        orderRush.setUserId(BaseContext.getCurrentId());
-        orderRush.setOrderTime(LocalDateTime.now());
-        orderMapper.insertRush(orderRush);
+
+        // 优化前：直接修改数据库
+        // 修改订单表中的订单状态为已接单
+        // TOrder order = TOrder.builder()
+        //         .id(id)
+        //         .status(TOrder.CONFIRMED)
+        //         .build();
+        // // order.setStatus(TOrder.CONFIRMED);
+        // orderMapper.updatev1(order);
+
+        // // 向抢单表中添加记录
+        // TOrderRush orderRush = new TOrderRush();
+        // orderRush.setOrderId(order.getId());
+        // orderRush.setUserId(BaseContext.getCurrentId());
+        // orderRush.setOrderTime(LocalDateTime.now());
+        // orderMapper.insertRush(orderRush);
     }
 }

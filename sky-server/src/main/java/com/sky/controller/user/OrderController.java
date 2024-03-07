@@ -155,8 +155,9 @@ public class OrderController {
 
     /**
      * 用户抢单接口
-     *      优化前5000并发qps：442 633 /sec，有超卖问题
-     *      使用Redis缓存订单后5000并发qps：720 /sec
+     *      优化前5000并发qps：236 /sec，有超卖问题
+     *      使用Redis缓存订单后5000并发qps：499 /sec
+     *      使用Redis缓存订单+RabbiMQ异步更新数据库后5000并发qps：625 /sec
      * @param id
      * @return
      */
