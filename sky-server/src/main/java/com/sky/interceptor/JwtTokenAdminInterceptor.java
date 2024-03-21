@@ -58,4 +58,9 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             return false;
         }
     }
+
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        //清空当前登录用户id
+        BaseContext.removeCurrentId();
+    }
 }

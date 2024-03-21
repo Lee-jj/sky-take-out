@@ -58,4 +58,9 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             return false;
         }
     }
+
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        //5、请求结束，清空ThreadLocal
+        BaseContext.removeCurrentId();
+    }
 }
