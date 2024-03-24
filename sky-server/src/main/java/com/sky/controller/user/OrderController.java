@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sky.dto.OrderSubmitDTOv1;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.entity.TOrderRush;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
@@ -167,5 +168,18 @@ public class OrderController {
         log.info("用户抢单，id:{}", id);
         orderService.doSeckill(id);
         return Result.success();
+    }
+
+    /**
+     * 获取用户抢单结果
+     * @param orderId
+     * @return seckillOrderId: 成功, -1 抢单失败, 0 抢单中
+     */
+    @GetMapping("/seckillOrder")
+    @ApiOperation("获取抢单结果")
+    public Result<Long> getSeckillResult(Long orderId) {
+        log.info("获取抢单结果, orderId:{}", orderId);
+        Long seckillOrderId = orderService.getSeckillResult(orderId);
+        return Result.success(seckillOrderId);
     }
 }

@@ -43,6 +43,7 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
+import com.sky.mapper.OrderRushMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.pojo.SeckillMessage;
@@ -71,6 +72,8 @@ public class OrderServiceImpl implements OrderService{
     private WebSocketServer webSocketServer;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private OrderRushMapper orderRushMapper;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
@@ -650,22 +653,29 @@ public class OrderServiceImpl implements OrderService{
         // }
 
         // 从Redis缓存中查订单数量
+        Boolean hasKey = redisTemplate.hasKey("orderId:" + id);
+        if (!hasKey) {
+            throw new OrderBusinessException("当前订单不存在~");
+        }
         ValueOperations valueOperations = redisTemplate.opsForValue();
         Long stock = valueOperations.decrement("orderId:" + id);
         if (stock < 0) {
             valueOperations.increment("orderId:" + id);
-            throw new OrderBusinessException("当前订单不存在或已经被接单");
+            throw new OrderBusinessException("当前订单已经被接单~");
         }
 
         // TODO 内存标记法是否可以用在这里？
 
-        // 利用RabbitMQ发送异步消息，完成订单表订单状态更新和向抢单表中添加数据，同时删除Redis缓存中的订单数据
+        // 利用RabbitMQ发送异步消息，完成订单表订单状态更新和向抢单表中添加数据
         SeckillMessage seckillMessage = SeckillMessage.builder()
                 .userId(BaseContext.getCurrentId())
                 .orderId(id)
                 .build();
         String jsonMessage = JSONObject.toJSONString(seckillMessage);
         mqSender.sendSeckillMessage(jsonMessage);
+
+        // 订单已被抢光，在Redis记录抢走这个订单的用户id
+        redisTemplate.opsForValue().set("isEmpty:" + id, BaseContext.getCurrentId());
 
 
         // 优化前：直接修改数据库
@@ -683,5 +693,18 @@ public class OrderServiceImpl implements OrderService{
         // orderRush.setUserId(BaseContext.getCurrentId());
         // orderRush.setOrderTime(LocalDateTime.now());
         // orderMapper.insertRush(orderRush);
+    }
+
+    @Override
+    public Long getSeckillResult(Long orderId) {
+        Long userId = BaseContext.getCurrentId();
+        TOrderRush orderRush = orderRushMapper.getByUserIdAndOrderId(userId, orderId);
+        if (orderRush != null) {
+            return orderRush.getId();
+        } else if (redisTemplate.opsForValue().get("isEmpty" + orderId) == BaseContext.getCurrentId()) {
+            throw new OrderBusinessException("抢单中请等待~");
+        } else {
+            throw new OrderBusinessException("抢单失败~");
+        }
     }
 }

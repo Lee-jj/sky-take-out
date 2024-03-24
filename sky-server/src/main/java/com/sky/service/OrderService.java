@@ -7,6 +7,7 @@ import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersRejectionDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.entity.TOrderRush;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -139,4 +140,12 @@ public interface OrderService {
      * @param id
      */
     void doSeckill(Long id);
+
+    /**
+     * 获取抢单结果
+     * @param userId
+     * @param orderId
+     * @return
+     */
+    Long getSeckillResult(Long orderId);
 }
