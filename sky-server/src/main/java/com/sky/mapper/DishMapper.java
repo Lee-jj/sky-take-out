@@ -82,4 +82,10 @@ public interface DishMapper {
     @Select("select count(id) from dish where status = #{status}")
     Integer getCountByStatus(Integer status);
     
+    /**
+     * 查询菜单总数
+     * @return
+     */
+    @Select("select max(id) from dish")
+    Long getTotalNum();
 }

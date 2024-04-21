@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -52,4 +53,12 @@ public interface UserMapper {
      */
     @Select("select * from t_user where id = #{id}")
     TUser getById(Long id);
+
+    /**
+     * 获取指定用户外的其他用户
+     * @param id
+     * @return
+     */
+    @Select("select * from t_user where id != #{id} and id < 10")
+    List<TUser> getWithout(Long id);
 }
