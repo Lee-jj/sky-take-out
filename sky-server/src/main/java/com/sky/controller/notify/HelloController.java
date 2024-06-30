@@ -18,6 +18,6 @@ public class HelloController {
     @GetMapping("/hello")
     public String printHello() {
         log.info("执行限流");
-        return "限流测试~";
+        return "rate limiter test~";
     }
 }

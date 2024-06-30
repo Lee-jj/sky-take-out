@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sky.annotation.RateLimiter;
 import com.sky.dto.OrderSubmitDTOv1;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -162,6 +163,7 @@ public class OrderController {
      * @param id
      * @return
      */
+    @RateLimiter(value = 16, timeout = 100)
     @PostMapping("/seckill/{id}")
     @ApiOperation("用户抢单")
     public Result doSeckill(@PathVariable Long id) {

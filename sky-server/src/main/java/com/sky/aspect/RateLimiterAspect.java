@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.sky.annotation.RateLimiter;
 import com.sky.constant.MessageConstant;
+import com.sky.exception.RateLimiterException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +38,7 @@ public class RateLimiterAspect {
      * @throws Throwable
      */
     @Before("rateLimiterPointCut()")
-    public void rateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
+    public void rateLimit(JoinPoint joinPoint) throws Throwable {
 
         // 获取annotation中的description值，即操作描述
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
@@ -53,11 +54,11 @@ public class RateLimiterAspect {
             }
         }
 
-        log.debug("[{}] 的QPS设置为: {}", methodName, RATE_LIMITER_CACHE.get(methodName).getRate());
+        log.info("[{}] 的QPS设置为: {}", methodName, RATE_LIMITER_CACHE.get(methodName).getRate());
         
         // 尝试获取令牌
         if (null != RATE_LIMITER_CACHE.get(methodName) && !RATE_LIMITER_CACHE.get(methodName).tryAcquire(rateLimiter.timeout(), rateLimiter.timeUnit())) {
-            throw new RuntimeException(MessageConstant.RATE_LIMITER_WARNING);
+            throw new RateLimiterException(MessageConstant.RATE_LIMITER_WARNING);
         }
     }
 }
