@@ -30,4 +30,6 @@ public class MessageConstant {
     public static final String USER_LOCATION_RESOLVE_FAILED = "用户位置解析失败";
     public static final String PATH_PLANNING_RESOLVE_FAILED = "路径规划解析失败";
     public static final String OVER_DELIVERY_DISTANCE = "超出配送距离，请选择其他地址";
+
+    public static final String RATE_LIMITER_WARNING = "请求频繁，请稍后再试";
 }
